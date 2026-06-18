@@ -1,6 +1,17 @@
 // The setup wizard page — one self-contained HTML document.
 // Plain English, button-by-button, with a "what's happening" panel at every
 // connection point. Two tracks: build it yourself, or do it inside Claude.
+import { RABBITHOLE, SERIES, link, bookLink, CTA } from "../branding.js";
+
+// The recurring "we'll build the real thing for you" funnel card.
+function ctaCard(spot) {
+  return `<div class="card cta-card">
+    <h3>${CTA.headline}</h3>
+    <p>${CTA.sub}</p>
+    <a class="cta-btn" href="${bookLink(spot)}" target="_blank">${CTA.button}</a>
+  </div>`;
+}
+
 export function renderPage() {
   return `<!doctype html>
 <html lang="en">
@@ -112,6 +123,13 @@ export function renderPage() {
   .sends { margin-top: 12px; }
   .hidden { display: none; }
   .muted { color: var(--muted); }
+
+  .cta-card { background: linear-gradient(120deg, var(--brand-dark), var(--brand));
+    color: #fff; border: 0; }
+  .cta-card h3 { margin: 0 0 6px; font-size: 19px; }
+  .cta-card p { margin: 0 0 14px; opacity: .92; }
+  .cta-btn { display: inline-block; background: #fff; color: var(--brand-dark);
+    font-weight: 700; text-decoration: none; padding: 11px 18px; border-radius: 10px; }
 </style>
 </head>
 <body>
@@ -119,7 +137,7 @@ export function renderPage() {
   <div class="inner">
     <span class="logo">🐇</span>
     <span class="name">Rabbithole <span>Consulting</span></span>
-    <a href="https://rabbithole.consulting" target="_blank">rabbithole.consulting&nbsp;↗</a>
+    <a href="${link("", { medium: "brandbar" })}" target="_blank">rabbithole.consulting&nbsp;↗</a>
   </div>
 </div>
 <div class="wrap">
@@ -219,7 +237,7 @@ export function renderPage() {
               <button class="go ghost" onclick="connectGoogle()">Connect Google account →</button>
               <span class="ok-pill hidden" id="gOk">✓ Connected</span>
             </div>
-            <p class="muted" style="font-size:13.5px;margin-bottom:0">The "Connect" button takes you to Google's approval screen, then back here. (Wiring the live token exchange is the next build step — the flow is in place.)</p>
+            <p class="muted" style="font-size:13.5px;margin-bottom:0">The "Connect" button takes you to Google's approval screen, then back here. Your token is stored on your computer in <code>tokens/</code> (gitignored) — never sent to us. (Run <code>npm install</code> first so this step has what it needs.)</p>
           </div>
         </div>
 
@@ -250,6 +268,8 @@ npm start</pre>
               would a real assistant. It'll reply there.</p>
           </div>
         </div>
+
+        ${ctaCard("build-track-bottom")}
       </section>
 
       <!-- ================= TRACK B: INSIDE CLAUDE ================= -->
@@ -277,6 +297,8 @@ npm start</pre>
               run it on a messenger, or extend it.</p>
           </div>
         </div>
+
+        ${ctaCard("claude-track-bottom")}
       </section>
     </main>
 
@@ -289,14 +311,19 @@ npm start</pre>
         <div class="muted" style="font-size:13px">Secrets are stored in <code>config.json</code>
           on your computer and are gitignored. Nothing is sent to us.</div>
       </div>
+      <div class="card cta-card" style="padding:18px">
+        <h3 style="font-size:16px">Want it done for you?</h3>
+        <p style="font-size:14px">We connect your real calendar, inbox &amp; team — production-ready.</p>
+        <a class="cta-btn" style="font-size:14px" href="${bookLink("sidebar")}" target="_blank">Book a call →</a>
+      </div>
     </aside>
   </div>
 
   <footer class="foot">
     <span class="logo">🐇</span>
-    <span>Built by <b>Rabbithole</b> — we help small businesses put AI to work, safely and in plain English.</span>
+    <span>Built by <b>Rabbithole</b> — ${RABBITHOLE.promise}</span>
     <span class="spacer"></span>
-    <span>Day 2 of 30 · <a href="https://rabbithole.consulting" target="_blank">rabbithole.consulting</a></span>
+    <span>Day ${SERIES.day} of ${SERIES.total} · <a href="${link("", { medium: "footer" })}" target="_blank">rabbithole.consulting</a></span>
   </footer>
 </div>
 
@@ -332,9 +359,11 @@ async function saveGoogle() {
   await api("/api/save", { google: { clientId: $("gId").value.trim(), clientSecret: $("gSecret").value.trim() } });
   refresh();
 }
-function connectGoogle() {
-  // Real OAuth redirect gets wired in the next build step; the route exists.
-  window.open("/oauth/callback", "_blank");
+async function connectGoogle() {
+  await saveGoogle(); // make sure creds are saved first
+  const r = await api("/api/google/auth-url");
+  if (r.url) { window.location.href = r.url; }
+  else { alert(r.error || "Couldn't start Google connect."); }
 }
 
 async function preview() {

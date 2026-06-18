@@ -46,6 +46,10 @@ function json(res, code, body) {
   res.end(JSON.stringify(body));
 }
 
+function esc(s) {
+  return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
@@ -75,17 +79,46 @@ const server = createServer(async (req, res) => {
     return json(res, 200, { plan: planFromInstruction(String(instruction || "")) });
   }
 
-  // Google OAuth callback lands here once that step is wired to real creds.
-  // For now it explains itself so the visual flow is complete end to end.
+  // Hand the browser the Google approval URL to redirect to. Lazy-import the
+  // Google module so the wizard still runs before `npm install`.
+  if (req.method === "GET" && url.pathname === "/api/google/auth-url") {
+    const cfg = load();
+    if (!cfg.google.clientId || !cfg.google.clientSecret) {
+      return json(res, 400, { error: "Save your Google Client ID and secret first." });
+    }
+    try {
+      const { authUrl } = await import("../google/auth.js");
+      return json(res, 200, { url: authUrl(cfg) });
+    } catch {
+      return json(res, 500, { error: "Run `npm install` first, then try Connect again." });
+    }
+  }
+
+  // Google redirects the owner back here with ?code=... — trade it for a token
+  // and store it on this machine. Never sent to us.
   if (req.method === "GET" && url.pathname === "/oauth/callback") {
+    const code = url.searchParams.get("code");
+    let ok = false;
+    let msg = "";
+    if (code) {
+      try {
+        const { exchangeCode } = await import("../google/auth.js");
+        await exchangeCode(code);
+        ok = true;
+      } catch (err) {
+        msg = err.message;
+      }
+    } else {
+      msg = "No authorization code came back from Google.";
+    }
     res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
     res.end(
-      `<!doctype html><meta charset=utf-8><title>Google connected</title>
+      `<!doctype html><meta charset=utf-8><title>Google ${ok ? "connected" : "error"}</title>
        <body style="font-family:system-ui;max-width:32rem;margin:4rem auto;line-height:1.6">
-       <h2>👋 This is where Google sends you back</h2>
-       <p>Once your Google credentials are filled in, this page captures the
-       approval and stores a token <em>on your computer</em> — never sent to us.
-       You can close this tab and return to the setup wizard.</p>
+       <h2>${ok ? "✅ Google connected" : "⚠️ Couldn't connect Google"}</h2>
+       <p>${ok
+        ? "Your token is stored on your computer (in <code>tokens/</code>, gitignored) — never sent to us. Close this tab and head back to setup."
+        : "Something went wrong: <code>" + esc(msg) + "</code>"}</p>
        <p><a href="/">← Back to setup</a></p></body>`
     );
     return;
