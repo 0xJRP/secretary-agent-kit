@@ -19,20 +19,30 @@ export function renderPage() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>🐇 Secretary Agent Kit — Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1a1c2c; --muted: #5b6173; --line: #e4e6ef; --bg: #f7f8fc;
-    --card: #ffffff; --brand: #1763f0; --brand-dark: #0b3aa8; --brand-soft: #e7efff;
-    --go: #0ea05a; --go-soft: #e6f6ee; --warn: #b45309; --warn-soft: #fdf2e3;
-    --send: #c2410c; --send-soft: #fdeee6;
+    /* Pulled straight from rabbithole.consulting's design system. */
+    --ink: #0a0a0a; --ink-2: #1a1a1a; --muted: #5a5f66; --dim: #8a8f96;
+    --line: #e3e6eb; --line-2: #d0d4da; --bg: #f5f6f8; --bg-3: #eaecf0; --card: #ffffff;
+    --brand: #1d3a8a; --brand-dark: #152a66; --brand-soft: #dee3f3;
+    --dark: #0a0e1c; --dark-2: #142253;
+    --go: #0e8a52; --go-soft: #e6f4ec; --warn: #b45309; --warn-soft: #fdf2e3;
+    --send: #b3401a; --send-soft: #fbede6;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
-    font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, .brandbar .name, .num { font-family: "Inter Tight", "Inter", system-ui, sans-serif; }
+  h1 { letter-spacing: -0.02em; }
+  .accent { font-family: "Newsreader", Georgia, serif; font-style: italic; font-weight: 500; }
   a { color: var(--brand); }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 24px; }
-  .brandbar { background: linear-gradient(90deg, var(--brand-dark), var(--brand));
-    color: #fff; border-radius: 0 0 18px 18px; }
+  .brandbar { background: linear-gradient(135deg, var(--dark-2) 0%, var(--dark) 100%);
+    color: #fff; }
   .brandbar .inner { max-width: 1040px; margin: 0 auto; padding: 14px 24px;
     display: flex; align-items: center; gap: 11px; }
   .brandbar .logo { width: 34px; height: 34px; border-radius: 9px; flex: none;
@@ -42,7 +52,7 @@ export function renderPage() {
   .brandbar a { margin-left: auto; color: #fff; text-decoration: none; font-weight: 600;
     font-size: 14px; background: rgba(255,255,255,.18); padding: 7px 14px; border-radius: 999px; }
   header.top { padding: 8px 0 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
-  header.top h1 { font-size: 26px; margin: 0; color: var(--brand-dark); }
+  header.top h1 { font-size: 30px; font-weight: 800; margin: 0; color: var(--ink); }
   header.top p { margin: 4px 0 0; color: var(--muted); }
   .layout { display: grid; grid-template-columns: 1fr 280px; gap: 28px; align-items: start; }
   @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
@@ -124,7 +134,7 @@ export function renderPage() {
   .hidden { display: none; }
   .muted { color: var(--muted); }
 
-  .cta-card { background: linear-gradient(120deg, var(--brand-dark), var(--brand));
+  .cta-card { background: linear-gradient(135deg, var(--dark-2) 0%, var(--dark) 100%);
     color: #fff; border: 0; }
   .cta-card h3 { margin: 0 0 6px; font-size: 19px; }
   .cta-card p { margin: 0 0 14px; opacity: .92; }
@@ -143,7 +153,7 @@ export function renderPage() {
 <div class="wrap">
   <header class="top">
     <h1>Your AI Secretary</h1>
-    <p>Set it up once — then text it like a personal assistant.</p>
+    <p>Set it up once — then text it like a <span class="accent">personal assistant.</span></p>
   </header>
 
   <div class="layout">

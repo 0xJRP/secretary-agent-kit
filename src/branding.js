@@ -13,8 +13,11 @@ export const RABBITHOLE = {
   fullName: "Rabbithole Consulting",
   site: "https://rabbithole.consulting",
   bookPath: "/#book", // where "book a call" points
-  blue: "#1763f0",
-  blueDark: "#0b3aa8",
+  // Matched to rabbithole.consulting's design system.
+  blue: "#1d3a8a", // --inkblue
+  blueDark: "#152a66", // --inkblue-deep
+  navy: "#142253", // --dark-2 (hero gradient start)
+  near: "#0a0e1c", // hero gradient end
   promise: "We build custom AI infrastructure for businesses — end to end.",
 };
 
