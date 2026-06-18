@@ -1,0 +1,21 @@
+{
+  "name": "secretary-agent-kit",
+  "version": "0.1.0",
+  "description": "Your AI secretary, on any messenger — a Claude-powered agent that reads your calendar, messages people, and books meetings. Rabbithole Day 2.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "setup": "node src/wizard/server.js",
+    "check": "node src/index.js --check"
+  },
+  "keywords": ["telegram", "agent", "claude", "ai", "secretary", "google-calendar", "gmail", "rabbithole"],
+  "author": "Rabbithole LLC",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "googleapis": "^144.0.0",
+    "telegraf": "^4.16.0",
+    "dotenv": "^16.4.5"
+  }
+}
